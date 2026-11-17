@@ -572,6 +572,8 @@
           catch (error) { reject(new Error('This image format is not supported by your browser. Try JPG, PNG or WebP.')); }
         });
       }
+
+      window.addEventListener('velora:image-job-saved', loadDashboardData);
       function outputExtension(mime) { return ({'image/jpeg':'jpg','image/png':'png','image/webp':'webp'})[mime] || 'png'; }
       function outputFilename(file, mime) {
         const base = file.name.replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|]/g, '_').trim() || 'velora-image';
@@ -603,6 +605,16 @@
           context.imageSmoothingEnabled = true; context.imageSmoothingQuality = 'high';
           context.drawImage(img, 0, 0, targetWidth, targetHeight);
           const blob = await canvasToBlob(canvas, mime, Number(quality.value) / 100);
+          // Enforce the signed-in user's daily limit only after processing succeeds.
+          const { data: authData } = await client.auth.getUser();
+          const signedInUser = authData?.user;
+          const toolKey = state.mode === 'resize' ? 'smart_resize' : state.mode === 'convert' ? 'format_conversion' : 'compression';
+          if (signedInUser) {
+            const { data: quotaRows, error: quotaError } = await client.rpc('consume_daily_usage', { p_tool_key: toolKey });
+            if (quotaError) throw new Error('Could not verify your daily usage limit. Please try again.');
+            const quota = Array.isArray(quotaRows) ? quotaRows[0] : quotaRows;
+            if (!quota?.allowed) throw new Error('Daily limit reached for this tool (' + (quota?.daily_limit ?? 'limit') + ' per day). Try again tomorrow.');
+          }
           canvas.width = 1; canvas.height = 1;
           if (state.resultUrl) URL.revokeObjectURL(state.resultUrl);
           state.resultBlob = blob; state.resultUrl = URL.createObjectURL(blob); state.outputMime = mime; state.resultName = outputFilename(state.file, mime);
@@ -629,10 +641,7 @@
 
           // Save activity metadata only. The image itself stays in the browser.
           try {
-            const { data: authData } = await client.auth.getUser();
-            const signedInUser = authData?.user;
             if (signedInUser) {
-              const toolKey = state.mode === 'resize' ? 'smart_resize' : state.mode === 'convert' ? 'format_conversion' : 'compression';
               const { error: historyError } = await client.from('image_jobs').insert({
                 user_id: signedInUser.id,
                 tool_key: toolKey,
@@ -650,7 +659,7 @@
                 }
               });
               if (historyError) console.warn('Could not save image activity:', historyError.message);
-              else if (typeof loadDashboardData === 'function') await loadDashboardData();
+              else window.dispatchEvent(new Event('velora:image-job-saved'));
             }
           } catch (historyError) {
             console.warn('Image activity could not be saved:', historyError);
