@@ -1,0 +1,4 @@
+import {esc} from './ui.js';
+export function bars(el,rows){el.innerHTML=rows.map(r=>{const pct=r.limit?Math.min(100,r.used/r.limit*100):0;return`<div class="ub"><div><span>${esc(r.label)}</span><b>${r.used}${r.limit!=null?' / '+r.limit:''}</b></div><div class="bar${pct>=100?' full':''}"><i style="width:${pct}%"></i></div></div>`}).join('')}
+export function columns(el,pts){const max=Math.max(1,...pts.map(p=>p.value));
+ el.innerHTML=`<svg viewBox="0 0 280 120" role="img" aria-label="Uses per day over the last 7 days">${pts.map((p,i)=>{const h=p.value/max*70,x=i*40+8;return`<rect x="${x}" y="${92-h}" width="24" height="${Math.max(h,2)}" rx="4" class="col" opacity="${p.value?1:.25}"/><text x="${x+12}" y="108" text-anchor="middle" class="ct">${esc(p.label)}</text>${p.value?`<text x="${x+12}" y="${86-h}" text-anchor="middle" class="cv">${p.value}</text>`:''}`}).join('')}</svg>`}
