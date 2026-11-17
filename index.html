@@ -332,8 +332,30 @@
         [...document.querySelectorAll('main#home > section')].forEach(section => {
           if (section.id !== 'userDashboard') section.hidden = !!user;
         });
-        document.getElementById('dashboardWelcome').textContent = user ? 'Signed in as ' + user.email + '. Your image tools and activity are in one place.' : 'Your image tools, activity and recent work in one place.';
-        if (user) hideModal();
+
+        const title = document.getElementById('dashboardTitle');
+        const welcome = document.getElementById('dashboardWelcome');
+        if (user) {
+          title.textContent = 'Your creative space.';
+          welcome.textContent = 'Loading your profile…';
+          const { data: profile, error } = await client
+            .from('profiles')
+            .select('display_name, avatar_url, created_at')
+            .eq('id', user.id)
+            .maybeSingle();
+          if (error) {
+            console.error('Could not load VELORA profile:', error.message);
+            welcome.textContent = 'Signed in as ' + (user.email || 'your account') + '. Your image tools and activity are in one place.';
+          } else {
+            const displayName = profile?.display_name?.trim();
+            title.textContent = displayName ? 'Welcome, ' + displayName + '.' : 'Your creative space.';
+            welcome.textContent = 'Signed in as ' + (user.email || 'your account') + '. Your image tools and activity are in one place.';
+          }
+          hideModal();
+        } else {
+          title.textContent = 'Your creative space.';
+          welcome.textContent = 'Your image tools, activity and recent work in one place.';
+        }
       }
       document.getElementById('authOpenBtn').addEventListener('click', () => { setMode('login'); showModal(); });
       document.getElementById('authCloseBtn').addEventListener('click', hideModal);
