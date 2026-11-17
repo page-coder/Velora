@@ -626,6 +626,36 @@
           }
           resultSection.classList.add('show');
           if (blob.size > 0) { $('#downloadBtn').disabled = false; }
+
+          // Save activity metadata only. The image itself stays in the browser.
+          try {
+            const { data: authData } = await client.auth.getUser();
+            const signedInUser = authData?.user;
+            if (signedInUser) {
+              const toolKey = state.mode === 'resize' ? 'smart_resize' : state.mode === 'convert' ? 'format_conversion' : 'compression';
+              const { error: historyError } = await client.from('image_jobs').insert({
+                user_id: signedInUser.id,
+                tool_key: toolKey,
+                original_file_name: state.file.name,
+                status: 'completed',
+                metadata: {
+                  input_size: state.file.size,
+                  output_size: blob.size,
+                  input_width: state.originalWidth,
+                  input_height: state.originalHeight,
+                  output_width: targetWidth,
+                  output_height: targetHeight,
+                  output_format: mime,
+                  processing_location: 'browser'
+                }
+              });
+              if (historyError) console.warn('Could not save image activity:', historyError.message);
+              else if (typeof loadDashboardData === 'function') await loadDashboardData();
+            }
+          } catch (historyError) {
+            console.warn('Image activity could not be saved:', historyError);
+          }
+
           resultSection.scrollIntoView({behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest'});
         } catch (error) {
           showError(error instanceof Error ? error.message : 'Something went wrong while processing the image.');
