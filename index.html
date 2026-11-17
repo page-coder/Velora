@@ -408,6 +408,7 @@
           });
         }
       }
+      window.addEventListener('velora:image-job-saved', loadDashboardData);
       document.getElementById('authOpenBtn').addEventListener('click', () => { setMode('login'); showModal(); });
       document.getElementById('authCloseBtn').addEventListener('click', hideModal);
       modal.addEventListener('click', event => { if (event.target === modal) hideModal(); });
@@ -573,7 +574,6 @@
         });
       }
 
-      window.addEventListener('velora:image-job-saved', loadDashboardData);
       function outputExtension(mime) { return ({'image/jpeg':'jpg','image/png':'png','image/webp':'webp'})[mime] || 'png'; }
       function outputFilename(file, mime) {
         const base = file.name.replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|]/g, '_').trim() || 'velora-image';
