@@ -137,6 +137,9 @@
         <a class="active" href="#home">Home</a><a href="#optimizer">Compress</a><a href="#tools">Resize</a><a href="#tools">Convert</a><a href="#tools">All tools</a><a href="#about">About</a>
       </nav>
       <div class="nav-actions">
+        <button class="button button-secondary" id="authOpenBtn" type="button">Log in / Sign up</button>
+        <span id="authUserLabel" hidden style="font-size:12px;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis"></span>
+        <button class="button button-quiet" id="authSignOutBtn" type="button" hidden>Sign out</button>
         <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch to dark theme" title="Toggle theme"><svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></button>
         <button class="icon-btn menu-btn" id="menuToggle" type="button" aria-label="Open navigation" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       </div>
@@ -221,9 +224,96 @@
     <section class="section" id="faq"><div class="container faq-grid"><div><div class="section-kicker">Good to know</div><h2>Questions, answered.</h2><p class="section-intro">A few details about using Velora to work with your images.</p></div><div class="faq-list"><details><summary>Is Velora free to use?</summary><p>Yes. This version runs in your browser and does not require an account or a paid image-processing API.</p></details><details><summary>Are my images uploaded to a server?</summary><p>No image upload is performed by this page. The selected image is read and processed locally in your browser. Your browser, extensions, or hosting environment are separate from the image-processing code.</p></details><details><summary>Which formats can I export?</summary><p>You can export JPEG, PNG or WebP. Animated GIFs are not preserved as animations by canvas-based processing; GIF or BMP inputs may need to be exported as a supported format.</p></details><details><summary>Why can a converted image be larger?</summary><p>File size depends on the image content, output format and quality setting. PNG is lossless, while JPEG and WebP quality settings can reduce size with some visual trade-offs. Not every conversion makes a file smaller.</p></details><details><summary>Can I use Velora on my phone?</summary><p>Yes. The interface adapts to mobile screens. Very large images may take longer or need more memory, depending on your device and browser.</p></details></div></div></section>
   </main>
 
+  <section id="authModal" hidden aria-label="VELORA account" style="position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:20px;background:rgba(3,18,12,.62);backdrop-filter:blur(8px)">
+    <div style="width:min(430px,100%);padding:26px;border:1px solid var(--line);border-radius:22px;background:var(--surface-solid);box-shadow:var(--shadow);position:relative">
+      <button type="button" id="authCloseBtn" aria-label="Close" style="position:absolute;right:16px;top:13px;border:0;background:transparent;color:var(--muted);font-size:25px">×</button>
+      <div class="eyebrow">YOUR PERSONAL IMAGE WORKSPACE</div>
+      <h2 style="margin:16px 0 5px;font-size:27px">Welcome to VELORA</h2>
+      <p style="margin:0 0 18px;color:var(--muted);font-size:13px">Sign in or create your free account.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+        <button class="button button-secondary" id="authTabLogin" type="button">Log in</button>
+        <button class="button button-quiet" id="authTabSignup" type="button">Sign up</button>
+      </div>
+      <form id="authForm" style="display:grid;gap:11px">
+        <label style="font-size:12px;font-weight:700">Email<input id="authEmail" type="email" autocomplete="email" required placeholder="you@example.com" style="display:block;width:100%;margin-top:5px;padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--page);color:var(--text)"></label>
+        <label style="font-size:12px;font-weight:700">Password<input id="authPassword" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters" style="display:block;width:100%;margin-top:5px;padding:12px;border:1px solid var(--line);border-radius:11px;background:var(--page);color:var(--text)"></label>
+        <button class="button button-primary" id="authSubmitBtn" type="submit">Log in</button>
+      </form>
+      <div style="display:flex;align-items:center;gap:10px;margin:15px 0;color:var(--muted);font-size:11px"><span style="height:1px;flex:1;background:var(--line)"></span>OR<span style="height:1px;flex:1;background:var(--line)"></span></div>
+      <button class="button button-quiet" id="authGoogleBtn" type="button" style="width:100%">Continue with Google</button>
+      <p id="authMessage" role="status" aria-live="polite" style="min-height:18px;margin:12px 0 0;color:var(--muted);font-size:12px"></p>
+    </div>
+  </section>
+
   <footer class="footer"><div class="container footer-inner"><div class="footer-top"><div><a class="brand" href="#home"><svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path fill="#11be7b" d="M4.5 7.4C12.7 3.1 18 6.1 21.4 13.9L29.1 31 20.4 43.5 4.8 12.8C3.7 10.6 3.6 9 4.5 7.4Z"/><path fill="#008f5b" d="M4.5 7.4C12.7 3.1 18 6.1 21.4 13.9L29.1 31 20.4 43.5 4.8 12.8C3.7 10.6 3.6 9 4.5 7.4Z" transform="translate(48 0) scale(-1 1)"/></svg><span>Velora</span></a><p class="footer-tagline">Smarter images. A cleaner web.</p></div><nav class="footer-links" aria-label="Footer navigation"><a href="#home">Home</a><a href="#optimizer">Optimizer</a><a href="#tools">Tools</a><a href="#about">About</a><a href="#faq">FAQ</a><a href="mailto:hello@velora.example">Contact</a></nav></div><div class="footer-bottom"><span>© <span id="yearNow"></span> Velora. Made for a lighter web.</span><span>Free image tools · Local processing · No account needed</span></div></div></footer>
   <nav class="mobile-bottom" aria-label="Quick navigation"><a href="#home" class="active" data-bottom="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V10Z"/></svg>Home</a><a href="#optimizer" data-bottom="tools"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m14.7 6.3 3 3M4 20l4.2-1 10.4-10.4a2.1 2.1 0 0 0-3-3L5.2 16 4 20Z"/><path d="m12 5 2-2 7 7-2 2"/></svg>Tools</a><a href="#about" data-bottom="about"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg>About</a><button type="button" id="bottomMenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Menu</button></nav>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    (() => {
+      const SUPABASE_URL = 'https://ezdykghrpbosvlfdbuis.supabase.co';
+      const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ttlXLlxissOWsauox4LevA_KnyLg1r3';
+      const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+      const modal = document.getElementById('authModal');
+      const message = document.getElementById('authMessage');
+      let mode = 'login';
+      const showModal = () => { modal.hidden = false; modal.style.display = 'grid'; message.textContent = ''; };
+      const hideModal = () => { modal.style.display = 'none'; modal.hidden = true; };
+      const setMode = next => {
+        mode = next;
+        document.getElementById('authTabLogin').className = next === 'login' ? 'button button-secondary' : 'button button-quiet';
+        document.getElementById('authTabSignup').className = next === 'signup' ? 'button button-secondary' : 'button button-quiet';
+        document.getElementById('authSubmitBtn').textContent = next === 'login' ? 'Log in' : 'Create free account';
+        document.getElementById('authPassword').autocomplete = next === 'login' ? 'current-password' : 'new-password';
+        message.textContent = '';
+      };
+      async function refreshAuth(session) {
+        const user = session?.user;
+        document.getElementById('authOpenBtn').hidden = !!user;
+        document.getElementById('authSignOutBtn').hidden = !user;
+        const label = document.getElementById('authUserLabel');
+        label.hidden = !user;
+        label.textContent = user?.email || '';
+        if (user) hideModal();
+      }
+      document.getElementById('authOpenBtn').addEventListener('click', () => { setMode('login'); showModal(); });
+      document.getElementById('authCloseBtn').addEventListener('click', hideModal);
+      modal.addEventListener('click', event => { if (event.target === modal) hideModal(); });
+      document.getElementById('authTabLogin').addEventListener('click', () => setMode('login'));
+      document.getElementById('authTabSignup').addEventListener('click', () => setMode('signup'));
+      document.getElementById('authForm').addEventListener('submit', async event => {
+        event.preventDefault();
+        const email = document.getElementById('authEmail').value.trim();
+        const password = document.getElementById('authPassword').value;
+        const submit = document.getElementById('authSubmitBtn');
+        submit.disabled = true; message.textContent = 'Please wait…';
+        try {
+          if (mode === 'signup') {
+            const { error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + window.location.pathname } });
+            if (error) throw error;
+            message.textContent = 'Account created. Check your email to confirm your address, then log in.';
+          } else {
+            const { data, error } = await client.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            await refreshAuth(data.session);
+            message.textContent = 'You are logged in.';
+          }
+        } catch (error) { message.textContent = error.message || 'Authentication failed. Please try again.'; }
+        finally { submit.disabled = false; }
+      });
+      document.getElementById('authGoogleBtn').addEventListener('click', async () => {
+        message.textContent = 'Redirecting to Google…';
+        const { error } = await client.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname } });
+        if (error) message.textContent = error.message;
+      });
+      document.getElementById('authSignOutBtn').addEventListener('click', async () => {
+        const { error } = await client.auth.signOut();
+        if (error) message.textContent = error.message;
+      });
+      client.auth.getSession().then(({ data }) => refreshAuth(data.session));
+      client.auth.onAuthStateChange((_event, session) => refreshAuth(session));
+    })();
+  </script>
   <script>
     (() => {
       'use strict';
