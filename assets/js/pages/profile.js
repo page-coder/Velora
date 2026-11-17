@@ -1,0 +1,8 @@
+import {$,esc,avatar,toast} from '../components/ui.js';
+import {updateName,uploadAvatar} from '../services/profile.js';
+export function init({user,prof,main}){
+ const draw=()=>{main.innerHTML=`<div class="mh"><h1>Profile</h1></div><div class="card" style="max-width:520px;display:grid;gap:14px"><div style="display:flex;gap:16px;align-items:center">${avatar(prof,user,'lg')}<div><label class="btn sm" style="cursor:pointer">Upload avatar<input id="avf" type="file" accept="image/jpeg,image/png,image/webp" style="position:absolute;opacity:0;width:1px;height:1px"></label><p class="note" style="margin:6px 0 0">JPG, PNG or WebP, up to 2 MB.</p></div></div><label class="fl">Display name<input class="fld" id="nm" maxlength="60" value="${esc(prof?.display_name||'')}"></label><label class="fl">Email<input class="fld" value="${esc(user.email)}" disabled></label><p class="note" style="margin:0">Member since ${new Date(prof?.created_at||user.created_at).toLocaleDateString()}</p><p class="err" id="er" role="alert"></p><button class="btn p" id="sv" style="justify-self:start">Save changes</button></div>`;
+  $('#sv').onclick=async e=>{const n=$('#nm').value.trim(),er=$('#er');er.textContent='';if(!n){er.textContent='Name can’t be empty.';return}e.currentTarget.disabled=true;try{prof=await updateName(user,n);toast('Profile saved');draw()}catch(x){er.textContent=x.message;e.currentTarget.disabled=false}};
+  $('#avf').onchange=async e=>{const f=e.target.files[0];if(!f)return;$('#er').textContent='';try{toast('Uploading…');prof=await uploadAvatar(user,f);toast('Avatar updated');draw()}catch(x){$('#er').textContent='Avatar upload failed: '+x.message}}};
+ draw();
+}
