@@ -183,8 +183,8 @@
         </div>
         <div class="dash-stats" aria-label="Account overview">
           <article class="dash-stat"><span>Plan</span><strong>Free</strong><small>All tools are free at launch</small></article>
-          <article class="dash-stat"><span>Daily usage</span><strong>—</strong><small>Usage tracking will appear as tools are connected</small></article>
-          <article class="dash-stat"><span>Images processed</span><strong>—</strong><small>Your activity history is being prepared</small></article>
+          <article class="dash-stat"><span>Daily usage</span><strong id="dashboardDailyUsage">—</strong><small id="dashboardDailyUsageNote">Loading today's usage…</small></article>
+          <article class="dash-stat"><span>Images processed</span><strong id="dashboardImagesProcessed">—</strong><small>Successfully completed jobs</small></article>
         </div>
         <div class="dash-section-title"><div><h2>Your AI tools</h2><p>Choose a workspace to get started.</p></div></div>
         <div class="dash-tools">
@@ -196,7 +196,7 @@
           <article class="dash-tool"><div class="dash-tool-icon">▦</div><h3>Bulk Intelligent Optimization</h3><p>Optimize multiple images in one organized workflow.</p><span class="tool-state pending">Bulk workflow setup required</span></article>
         </div>
         <div class="dash-section-title"><div><h2>Recent images</h2><p>Your saved work will appear here.</p></div></div>
-        <div class="dash-recent-empty"><strong>No recent images yet</strong>Process and save an image to start building your history.</div>
+        <div class="dash-recent-empty" id="dashboardRecentImages"><strong>No recent images yet</strong>Your recent image activity will appear here.</div>
       </div>
     </section>
 
@@ -351,10 +351,61 @@
             title.textContent = displayName ? 'Welcome, ' + displayName + '.' : 'Your creative space.';
             welcome.textContent = 'Signed in as ' + (user.email || 'your account') + '. Your image tools and activity are in one place.';
           }
+          await loadDashboardData();
           hideModal();
         } else {
           title.textContent = 'Your creative space.';
           welcome.textContent = 'Your image tools, activity and recent work in one place.';
+          document.getElementById('dashboardDailyUsage').textContent = '—';
+          document.getElementById('dashboardDailyUsageNote').textContent = 'Sign in to view usage';
+          document.getElementById('dashboardImagesProcessed').textContent = '—';
+        }
+      }
+
+      async function loadDashboardData() {
+        const usageValue = document.getElementById('dashboardDailyUsage');
+        const usageNote = document.getElementById('dashboardDailyUsageNote');
+        const imagesValue = document.getElementById('dashboardImagesProcessed');
+        const recent = document.getElementById('dashboardRecentImages');
+
+        const { data: statsRows, error: statsError } = await client.rpc('get_dashboard_stats');
+        if (statsError) {
+          console.error('Could not load dashboard statistics:', statsError.message);
+          usageValue.textContent = '—';
+          usageNote.textContent = 'Usage statistics unavailable';
+          imagesValue.textContent = '—';
+        } else {
+          const stats = Array.isArray(statsRows) ? statsRows[0] : statsRows;
+          const used = Number(stats?.daily_used ?? 0);
+          const limit = Number(stats?.daily_limit ?? 0);
+          usageValue.textContent = used + ' / ' + limit;
+          usageNote.textContent = 'Images used today · India time';
+          imagesValue.textContent = String(Number(stats?.images_processed ?? 0));
+        }
+
+        const { data: jobs, error: jobsError } = await client
+          .from('image_jobs')
+          .select('id, original_file_name, tool_key, status, created_at')
+          .order('created_at', { ascending: false })
+          .limit(5);
+        if (jobsError) {
+          console.error('Could not load recent image activity:', jobsError.message);
+          recent.textContent = 'Recent image activity is currently unavailable.';
+        } else if (!jobs?.length) {
+          recent.innerHTML = '<strong>No recent images yet</strong>Your recent image activity will appear here.';
+        } else {
+          recent.replaceChildren();
+          jobs.forEach(job => {
+            const item = document.createElement('div');
+            item.style.cssText = 'display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line);text-align:left';
+            const name = document.createElement('strong');
+            name.textContent = job.original_file_name || 'Untitled image';
+            const detail = document.createElement('span');
+            detail.textContent = (job.tool_key || 'Image tool') + ' · ' + (job.status || 'pending');
+            detail.style.color = 'var(--muted)';
+            item.append(name, detail);
+            recent.append(item);
+          });
         }
       }
       document.getElementById('authOpenBtn').addEventListener('click', () => { setMode('login'); showModal(); });
