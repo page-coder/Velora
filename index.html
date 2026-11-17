@@ -123,6 +123,33 @@
     }
     @media(max-width:370px){.container{width:calc(100% - 20px)}.brand{font-size:20px}.feature-row{grid-template-columns:repeat(2,1fr);gap:14px}.feature{display:grid;grid-template-columns:36px 1fr;grid-template-rows:auto auto;column-gap:8px}.feature-icon{grid-row:1/3;margin:0}.feature strong{align-self:end}.feature span{margin-top:2px}.format-options{grid-template-columns:repeat(2,1fr)}.dropzone{min-height:150px}.result-summary{flex-direction:column}.result-summary .button{width:100%}.section h2{font-size:25px}}
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+  
+    /* VELORA 2.0 personal workspace */
+    .dashboard{padding:42px 0 70px;min-height:72vh}
+    .dashboard[hidden]{display:none}
+    .dash-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;margin-bottom:25px}
+    .dash-heading h1{font-size:clamp(30px,4vw,46px);letter-spacing:-1.8px;margin:8px 0}
+    .dash-heading p{color:var(--muted);margin:0;font-size:14px}
+    .dash-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:28px}
+    .dash-stat,.dash-panel{background:var(--surface);border:1px solid var(--line);border-radius:19px;padding:19px;box-shadow:var(--shadow-sm)}
+    .dash-stat span{display:block;color:var(--muted);font-size:12px;font-weight:700}
+    .dash-stat strong{display:block;font-size:22px;margin-top:7px;letter-spacing:-.5px}
+    .dash-stat small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+    .dash-section-title{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:28px 0 15px}
+    .dash-section-title h2{font-size:21px;letter-spacing:-.6px;margin:0}
+    .dash-section-title p{font-size:12px;color:var(--muted);margin:4px 0 0}
+    .dash-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .dash-tool{border:1px solid var(--line);border-radius:18px;padding:18px;background:var(--surface);min-width:0}
+    .dash-tool-icon{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:var(--mint);color:var(--green-dark);font-size:20px;margin-bottom:13px}
+    .dash-tool h3{font-size:14px;margin:0 0 6px}
+    .dash-tool p{font-size:12px;color:var(--muted);line-height:1.6;min-height:38px;margin:0 0 12px}
+    .dash-tool .tool-state{font-size:10px;font-weight:800;color:var(--green-dark)}
+    .dash-tool .tool-state.pending{color:var(--muted)}
+    .dash-recent-empty{border:1px dashed var(--line);border-radius:16px;padding:27px;text-align:center;color:var(--muted);font-size:13px}
+    .dash-recent-empty strong{display:block;color:var(--text);font-size:14px;margin-bottom:5px}
+    @media(max-width:760px){.dashboard{padding:28px 0 50px}.dash-heading{align-items:flex-start;flex-direction:column}.dash-stats{grid-template-columns:1fr}.dash-tools{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:430px){.dash-tools{grid-template-columns:1fr}}
+
   </style>
 </head>
 <body>
@@ -147,6 +174,32 @@
   </header>
 
   <main id="home">
+    
+    <section class="dashboard" id="userDashboard" hidden aria-labelledby="dashboardTitle">
+      <div class="container">
+        <div class="dash-heading">
+          <div><div class="section-kicker">✦ YOUR VELORA WORKSPACE</div><h1 id="dashboardTitle">Your creative space.</h1><p id="dashboardWelcome">Your image tools, activity and recent work in one place.</p></div>
+          <span class="eyebrow">FREE WORKSPACE</span>
+        </div>
+        <div class="dash-stats" aria-label="Account overview">
+          <article class="dash-stat"><span>Plan</span><strong>Free</strong><small>All tools are free at launch</small></article>
+          <article class="dash-stat"><span>Daily usage</span><strong>—</strong><small>Usage tracking will appear as tools are connected</small></article>
+          <article class="dash-stat"><span>Images processed</span><strong>—</strong><small>Your activity history is being prepared</small></article>
+        </div>
+        <div class="dash-section-title"><div><h2>Your AI tools</h2><p>Choose a workspace to get started.</p></div></div>
+        <div class="dash-tools">
+          <article class="dash-tool"><div class="dash-tool-icon">✧</div><h3>AI Image Upscaling</h3><p>Increase image resolution while preserving detail and clarity.</p><span class="tool-state pending">AI service setup required</span></article>
+          <article class="dash-tool"><div class="dash-tool-icon">◉</div><h3>AI Background Removal</h3><p>Isolate a subject and create a clean transparent background.</p><span class="tool-state pending">AI service setup required</span></article>
+          <article class="dash-tool"><div class="dash-tool-icon">⇄</div><h3>Next-Generation Formats</h3><p>Convert images to modern formats with quality controls.</p><span class="tool-state">Browser tools available</span></article>
+          <article class="dash-tool"><div class="dash-tool-icon">▣</div><h3>AI Smart Resize &amp; Crop</h3><p>Prepare image sizes for social media, websites and ads.</p><span class="tool-state pending">Advanced tool setup required</span></article>
+          <article class="dash-tool"><div class="dash-tool-icon">✦</div><h3>AI Image Restoration</h3><p>Improve old, damaged or low-quality images.</p><span class="tool-state pending">AI service setup required</span></article>
+          <article class="dash-tool"><div class="dash-tool-icon">▦</div><h3>Bulk Intelligent Optimization</h3><p>Optimize multiple images in one organized workflow.</p><span class="tool-state pending">Bulk workflow setup required</span></article>
+        </div>
+        <div class="dash-section-title"><div><h2>Recent images</h2><p>Your saved work will appear here.</p></div></div>
+        <div class="dash-recent-empty"><strong>No recent images yet</strong>Process and save an image to start building your history.</div>
+      </div>
+    </section>
+
     <section class="hero">
       <svg class="hero-decor" viewBox="0 0 250 210" fill="none" aria-hidden="true"><path d="M13 182C67 149 113 157 154 103S216 35 235 27" stroke="#20bf82" stroke-width="1.4" stroke-dasharray="4 7"/><path d="M223 29l13-2-3 14" stroke="#20bf82" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M100 35c16-27 39-25 42-4-17 6-31 8-42 4Z" fill="#9be9c9"/><path d="M117 42 143 16" stroke="#3cc78b" stroke-width="1.5"/><path d="M35 109c-6-17 7-35 25-32 2 18-7 29-25 32Z" fill="#bcf6dc"/><path d="M39 115 60 81" stroke="#3cc78b" stroke-width="1.5"/></svg>
       <div class="container">
@@ -274,6 +327,12 @@
         const label = document.getElementById('authUserLabel');
         label.hidden = !user;
         label.textContent = user?.email || '';
+        const dashboard = document.getElementById('userDashboard');
+        dashboard.hidden = !user;
+        [...document.querySelectorAll('main#home > section')].forEach(section => {
+          if (section.id !== 'userDashboard') section.hidden = !!user;
+        });
+        document.getElementById('dashboardWelcome').textContent = user ? 'Signed in as ' + user.email + '. Your image tools and activity are in one place.' : 'Your image tools, activity and recent work in one place.';
         if (user) hideModal();
       }
       document.getElementById('authOpenBtn').addEventListener('click', () => { setMode('login'); showModal(); });
